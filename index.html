@@ -6,30 +6,55 @@
   </head>
   <body>
     <script type="text/javascript">
+
+      // VECTOR FUNCTIONS
       function vectorAdd(v, w) {
-        var arr = [];
-        v.forEach(function(el, i) { arr.push(el + w[i]); })
-        return arr;
+        return v.map(function(el, i) { return el + w[i]; });
       }
 
       function vectorSubtract(v, w) {
-        var arr = [];
-        v.forEach(function(el, i) { arr.push(el - w[i]); })
-        return arr;
+        return v.map(function(el, i) { return el - w[i]; });
       }
 
-      function vectorSum(vectors) { return vectors.reduce(vectorAdd); }
-
-      function zip(arrays) {
-        return arrays[0].map(function(_,i){
-          return arrays.map(function(array){return array[i]})
-        });
+      function vectorSum(vectors) {
+        return vectors.reduce(vectorAdd);
       }
+
+      function scalarMultiply(c, v) {
+        return v.map(function(el) { return c * el; });
+      }
+
+      function vectorMean(vectors) {
+        var n = vectors.length;
+        return scalarMultiply(1/n, vectorSum(vectors));
+      }
+
+      function dot(v, w) {
+        return v.map(function(el, i) { return el * w[i]; }).reduce(function(a, b) { return a + b; });
+      }
+
+      function sumOfSquares(v) {
+        return dot(v, v);
+      }
+
+      function magnitude(v) {
+        return Math.sqrt(sumOfSquares(v));
+      }
+
+      function squaredDistance(v, w) {
+        return sumOfSquares(vectorSubtract(v, w));
+      }
+
+      function distance(v, w) {
+        return magnitude(vectorSubtract(v, w));
+      }
+
+      // MATRIX FUNCTIONS
+
 
 
       // TESTS
-
-
+      // Create equals function for Array-type objects
       if(Array.prototype.equals) console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.");
       Array.prototype.equals = function (array) {
         if (!array) return false;
@@ -45,10 +70,18 @@
       }
       Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
-      console.log(vectorAdd([5, 2], [1, 2]).equals([6, 4]));
-      console.log(vectorSubtract([5, 2], [1, 2]).equals([4, 0]));
-      console.log(vectorSum([[1, 2], [3, 4], [5, 6]]).equals([9, 12]));
-
+      // Console error if one of the functions does not work properly
+      if (!vectorAdd([5, 2], [1, 2]).equals([6, 4]))                               console.error('vectorAdd does not seem to work properly');
+      if (!vectorSubtract([5, 2], [1, 2]).equals([4, 0]))                          console.error('vectorSubtract does not seem to work properly');
+      if (!vectorSum([[1, 2], [3, 4], [5, 6]]).equals([9, 12]))                    console.error('vectorSum does not seem to work properly');
+      if (!scalarMultiply(3, [2, 5, 3]).equals([6, 15, 9]))                        console.error('scalarMultiply does not seem to work properly');
+      if (!vectorMean([[1, 2, 3], [4, 5, 6], [7, 5, 0]]).equals([4, 4, 3]))        console.error('vectorMean does not seem to work properly');
+      if (dot([1, 2, 3], [4, 5, 6]) !== 32)                                        console.error('dot does not seem to work properly');
+      if (sumOfSquares([1, 2, 3]) !== 14)                                          console.error('sumOfSquares does not seem to work properly');
+      if (magnitude([3, 4]) !== 5)                                                 console.error('magnitude does not seem to work properly');
+      if (squaredDistance([1, 2], [5, 5]) !== 25)                                  console.error('squaredDistance does not seem to work properly');
+      if (distance([1, 2], [5, 5]) !== 5)                                          console.error('distance does not seem to work properly');
+      if (distance([1, 2], [5, 5]) !== Math.sqrt(squaredDistance([1, 2], [5, 5]))) console.error('distance does not seem to work properly');
     </script>
   </body>
 </html>
